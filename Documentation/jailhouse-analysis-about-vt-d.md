@@ -2,7 +2,7 @@ jailhouse analysis about vt-d
 
 ###Config file 
 The config file predefine the system's config and the data in this file will be load to defined memory region which will be assigned to some struct point like system_config as we discuss later. We can hold config file configs/qemu-vm.c file as a example in this doc. Now let's take a glance on the struct on this file.   
-```
+``` c
 struct {
 	struct jailhouse_system header;
 	__u64 cpus[1];
@@ -27,12 +27,12 @@ Fig. 1 Jailhouse physical memory layout scheme. Lowercase labels are global symb
 ##Init_early 
 After entry, the init_early is the first function get invoked.   
 Firstly, it will assign system_config to the virtual address.   
-```
+``` c
 system_config = (struct jailhouse_system *)
 		(JAILHOUSE_BASE + core_and_percpu_size);
 ```		
 As we can see, the content of the system_config comes from qemu_vm.c:  
-```
+``` c
 .header = {
 		.signature = JAILHOUSE_SYSTEM_SIGNATURE,
 		.hypervisor_memory = {
@@ -79,7 +79,7 @@ This function will read the cpu register and store it to struct cpu_data
 ##init_late->iommu_init 
 //TODO how to describe this. firstly, find the small n of interrput_limit.  
 
-```
+``` c
 	for (n = 0; (1UL << n) < (system_config->interrupt_limit); n++)
 ```
 
@@ -91,7 +91,7 @@ Then alloc pages as int_remap_table from mem_pool for every interrput. Count how
  5. get the control register and set interrupt and queue invalidation and dma remapping as enable.   
  6. vtd_init_ir_emulation will fill the struct root_cell_units. This function will initialize the interrrupt remapping support.   
 
- ```
+ ``` c
 	/*
 	 * Derive vdt_paging from very similar x86_64_paging,
 	 * replicating 0..3 for 4 levels and 1..3 for 3 levels.
